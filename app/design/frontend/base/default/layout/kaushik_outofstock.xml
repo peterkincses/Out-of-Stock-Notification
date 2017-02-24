@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+    </default>
+<!--     <outofstock_index_index>
+        <reference name="content">
+            <block type="outofstock/outofstock" name="outofstock" template="outofstock/outofstock.phtml" />
+        </reference>
+    </outofstock_index_index> -->
+    <catalog_product_view>
+    	<reference name="product.info.extrahint">
+	        <block type="outofstock/outofstock" name="outofstock" template="outofstock/outofstock.phtml" />
+	    </reference>
+    </catalog_product_view>
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="outofstock">
+                <name>stocksubscription</name>
+                <path>outofstock/index/subscribedlist</path>
+                <label>My Product Stock Subscriptions</label>
+            </action>
+        </reference>
+    </customer_account>
+    <outofstock_index_subscribedlist>
+        <update handle="customer_account"/> <!-- include existing customer account layout -->
+        <reference name="content">      
+            <block type="outofstock/outofstock" name="mystocksubscription" template="outofstock/mysubscription.phtml" />
+        </reference>
+    </outofstock_index_subscribedlist>
+</layout>

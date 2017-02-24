@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Module configuration
+ *
+ * @author Bikash Kaushik
+ */
+-->
+<config>
+    <modules>
+        <Kaushik_Outofstock>
+            <version>1.0.3</version>
+        </Kaushik_Outofstock>
+    </modules>
+    <frontend>
+        <routers>
+            <outofstock>
+                <use>standard</use>
+                <args>
+                    <module>Kaushik_Outofstock</module>
+                    <frontName>outofstock</frontName>
+                </args>
+            </outofstock>
+        </routers>
+        <layout>
+            <updates>
+                <outofstock>
+                    <file>kaushik_outofstock.xml</file>
+                </outofstock>
+            </updates>
+        </layout>
+    </frontend>
+    <admin>
+        <routers>
+			<outofstock>
+				<use>admin</use>
+				<args>
+					<module>Kaushik_Outofstock</module>
+					<frontName>outofstock</frontName>
+				</args>
+			</outofstock>
+        </routers>
+    </admin>
+    <adminhtml>
+        <events>
+            <adminhtml_block_html_before>
+                <observers>
+                    <outofstock>
+                        <class>outofstock/adminhtml_observer</class>
+                        <method>onBlockHtmlBefore</method>
+                    </outofstock>
+                </observers>
+            </adminhtml_block_html_before>
+            <eav_collection_abstract_load_before>
+                <observers>
+                    <outofstock>
+                        <class>outofstock/adminhtml_observer</class>
+                        <method>onEavLoadBefore</method>
+                    </outofstock>
+                </observers>
+            </eav_collection_abstract_load_before>
+            <catalog_product_delete_after>
+                <observers>
+                    <outofstock_delete_subscription>
+                        <class>outofstock/adminhtml_observer</class>
+                        <method>deleteSubscription</method>
+                    </outofstock_delete_subscription>
+                </observers>
+            </catalog_product_delete_after>
+        </events>
+		<menu>
+			<outofstock module="outofstock">
+				<title>OutOfStock Subscriptions</title>
+				<sort_order>71</sort_order>               
+				<children>
+					<items module="outofstock">
+						<title>Manage Subscriptions</title>
+						<sort_order>0</sort_order>
+						<action>outofstock/adminhtml_outofstock</action>
+					</items>
+				</children>
+			</outofstock>
+		</menu>
+		<acl>
+			<resources>
+				<all>
+					<title>Allow Everything</title>
+				</all>
+				<admin>
+					<children>
+						<Kaushik_Outofstock>
+							<title>Outofstock Module</title>
+							<sort_order>10</sort_order>
+						</Kaushik_Outofstock>
+					</children>
+				</admin>
+			</resources>
+		</acl>
+		<layout>
+			<updates>
+				<outofstock>
+					<file>outofstock.xml</file>
+				</outofstock>
+			</updates>
+		</layout>
+    </adminhtml>   
+    <global>
+        <models>
+            <outofstock>
+                <class>Kaushik_Outofstock_Model</class>
+                <resourceModel>outofstock_mysql4</resourceModel>
+            </outofstock>
+            <outofstock_mysql4>
+                <class>Kaushik_Outofstock_Model_Mysql4</class>
+                <entities>
+                    <outofstock>
+                        <table>outofstock</table>
+                    </outofstock>
+                </entities>
+            </outofstock_mysql4>
+        </models>
+        <resources>
+            <outofstock_setup>
+                <setup>
+                    <module>Kaushik_Outofstock</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </outofstock_setup>
+            <outofstock_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </outofstock_write>
+            <outofstock_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </outofstock_read>
+        </resources>
+        <blocks>
+            <outofstock>
+                <class>Kaushik_Outofstock_Block</class>
+            </outofstock>
+        </blocks>
+        <helpers>
+            <outofstock>
+                <class>Kaushik_Outofstock_Helper</class>
+            </outofstock>
+        </helpers>
+		<events>
+			<catalog_product_save_after>
+                <observers>
+                    <outofstock_stock_item_save>
+                        <class>outofstock/observer</class>
+                        <method>stockChangeItem</method>
+                    </outofstock_stock_item_save>
+                </observers>
+            </catalog_product_save_after>
+            <sales_order_item_cancel>
+                <observers>
+                    <outofstock_order_cancel>
+                        <class>outofstock/observer</class>
+                        <method>cancelOrderItem</method>
+                    </outofstock_order_cancel>
+                </observers>
+            </sales_order_item_cancel>
+		</events>
+        <template>
+            <email>
+                <outofstock_email_subscription module="outofstock">
+                    <label>Stock Email Subscription</label>
+                    <file>outofstock/subscribe.html</file>
+                    <type>html</type>
+                </outofstock_email_subscription>
+				<outofstock_email_unsubscribe module="outofstock">
+                    <label>Stock Email Unsubscribe</label>
+                    <file>outofstock/unsubscribe.html</file>
+                    <type>html</type>
+                </outofstock_email_unsubscribe>
+				<outofstock_email_productinstock module="outofstock">
+                    <label>Stock Email for Product Back In Stock</label>
+                    <file>outofstock/instock.html</file>
+                    <type>html</type>
+                </outofstock_email_productinstock>
+            </email>
+        </template>
+    </global>
+</config>

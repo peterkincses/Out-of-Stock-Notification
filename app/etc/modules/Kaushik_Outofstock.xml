@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Kaushik_Outofstock>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Kaushik_Outofstock>
+    </modules>
+</config> 

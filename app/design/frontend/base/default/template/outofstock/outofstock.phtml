@@ -1,0 +1,60 @@
+<?php if(Mage::registry('current_product')->getStockItem()->getIsInStock()==0): ?>
+<div class="login-message"></div>
+<?php 
+    $productId = Mage::registry('current_product')->getId();
+    if(Mage::getSingleton('customer/session')->isLoggedIn()):
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+        $model = Mage::getModel('outofstock/outofstock')->getCollection();
+        $model->addFieldToFilter('email',$customer->getEmail());
+        $model->addFieldToFilter('product_id', $productId);
+        if($model->count()):
+?>
+        <div class="subscribed-message">
+            <ul class="messages"><li class="success-msg"><ul><li style="color:#14595c"><span>You are subscribed for availability of this product.</span></li></ul></li></ul>
+        </div>
+    <?php else: ?>
+        <div class="outofstock-notify">
+            <div class="input-box">
+                <input type="hidden" name="product_id" id="product_id" value="<?php echo $productId ?>">
+                <input type="hidden" style="width: 265px;" autocapitalize="off" autocorrect="off" spellcheck="false" name="notify-email" value="<?php echo $customer->getEmail() ?>" id="notify-email" class="input-text required-entry validate-email" title="Email Address" />
+                <button type="submit" class="button" title="Notify me" name="subscribe" id="subscribe"><span><span>Notify me</span></span></button>
+            </div>
+        </div>
+    <?php endif; ?>
+<?php else: ?>
+    <div class="outofstock-notify">
+        <div class="input-box">
+            <input type="hidden" name="product_id" id="product_id" value="<?php echo $productId ?>">
+            <input type="email" style="width: 265px;" autocapitalize="off" autocorrect="off" spellcheck="false" name="notify-email" value="" id="notify-email" class="input-text required-entry validate-email" title="Email Address" />
+            <button type="submit" class="button" title="Notify me" name="subscribe" id="subscribe"><span><span>Notify me</span></span></button>
+        </div>
+    </div>
+<?php endif; ?>
+<script type="text/javascript">
+    jQuery('.outofstock-notify .button').click(function(e){
+        e.preventDefault();
+        jQuery(this).addClass('disabled');
+        var email = jQuery("#notify-email").val();
+        var product_id = jQuery("#product_id").val();
+        var postUrl = '<?php echo $this->getUrl() ?>outofstock/index/subscribe';
+        jQuery.post(postUrl, {email:email,product_id:product_id}, function( data ) {
+            if(data.status == "success") {
+                jQuery( ".login-message" ).html('<ul class="messages"><li class="success-msg"><ul><li style="color:#14595c"><span>'+data.msg+'</span></li></ul></li></ul>');
+                jQuery( ".login-message" ).fadeIn();
+                jQuery(".outofstock-notify").hide();
+            } else if(data.status == "failure"){
+                jQuery( ".login-message" ).html('<ul class="messages"><li class="error-msg"><ul><li style="color:#14595c"><span>'+data.msg+'</span></li></ul></li></ul>');
+                jQuery( ".login-message" ).fadeIn();
+                jQuery("#subscribe").removeClass('disabled');
+            } else if(data.status == "warning"){
+                jQuery( ".login-message" ).html('<ul class="messages"><li class="error-msg"><ul><li style="color:#14595c"><span>'+data.msg+'</span></li></ul></li></ul>');
+                jQuery( ".login-message" ).fadeIn();
+                jQuery("#subscribe").removeClass('disabled');
+            }
+            setTimeout( function() {
+                jQuery( ".login-message" ).fadeOut();
+            }, 4000);
+        });
+    }); 
+</script>
+<?php endif; ?>

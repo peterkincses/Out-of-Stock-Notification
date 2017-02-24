@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <outofstock_adminhtml_outofstock_index>
+        <reference name="content">
+            <block type="outofstock/adminhtml_outofstock" name="outofstock" />
+        </reference>
+    </outofstock_adminhtml_outofstock_index>
+</layout>

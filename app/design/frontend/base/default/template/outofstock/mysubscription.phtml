@@ -1,0 +1,88 @@
+<?php 
+	$customer = Mage::getModel('customer/session')->getCustomer();
+	$email = $customer->getEmail();
+	$model = Mage::getModel('outofstock/outofstock')->getCollection();
+	$model->addFieldToFilter('email',$email);
+	//echo "<pre>";print_r($model->getData());
+?>
+<div class="dashboard">
+    <div class="page-title">
+        <h1><?php echo $this->__('My Stock Subscription') ?></h1>
+    </div>
+    <div class="unsubscription-message"></div>
+    <table id="shopping-cart-table" class="data-table">
+        <colgroup>
+	        <col width="1">
+	        <col width="1">
+	        <col width="1">
+	        <col width="1">
+        </colgroup>
+        <thead>
+            <tr class="first last">
+            	<th rowspan="1"><span class="nobr">Image</span></th>
+                <th rowspan="1"><span class="nobr">Product</span></th>
+                <th rowspan="1"><span class="nobr">Subscribed On</span></th>
+                <th rowspan="1">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<?php foreach ($model as $value): ?>
+        		<?php $product = Mage::getModel('catalog/product')->load($value->getProductId()); ?>
+	            <tr class="first last odd pid<?php echo $value->getProductId() ?>">
+					<td class="product-cart-image"><div class="image"><img width="50" src="<?php echo $this->helper('catalog/image')->init($product, 'thumbnail'); ?>" alt=""></div></td>
+					<td class="product-cart-info"><?php echo $product->getName(); ?></td>
+	            	<td class="product-cart-price" data-rwd-label="Price"><?php echo $value->getCreatedTime(); ?></td>
+		            <td class="a-center product-cart-remove last">
+		            	<input type="button" class="ui-button-orange" value="unsubscribe" name="unsubscribe" id="unsubscribe" onclick="unsubscribe(<?php echo $value->getProductId(); ?>)">
+		            </td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+    </table>
+</div>
+<style type="text/css">
+	.data-table thead th, .data-table tbody td {
+	    border: 1px solid silver;
+	}
+    .ui-button-orange {
+        color: #fff;
+        line-height: 21px;
+        padding: 0 11px;
+        font-size: 12px;
+        text-shadow: none;
+        background: #F27832;
+        background: -moz-linear-gradient(top, rgba(253,144,58,1) 0%, rgba(241,117,49,1) 50%, rgba(238,90,12,1) 50%, rgba(223,61,1,1) 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(253,144,58,1)), color-stop(50%,rgba(241,117,49,1)), color-stop(50%,rgba(238,90,12,1)), color-stop(100%,rgba(223,61,1,1)));
+        background: -webkit-linear-gradient(top, rgba(253,144,58,1) 0%,rgba(241,117,49,1) 50%,rgba(238,90,12,1) 50%,rgba(223,61,1,1) 100%);
+        background: -o-linear-gradient(top, rgba(253,144,58,1) 0%,rgba(241,117,49,1) 50%,rgba(238,90,12,1) 50%,rgba(223,61,1,1) 100%);
+        background: -ms-linear-gradient(top, rgba(253,144,58,1) 0%,rgba(241,117,49,1) 50%,rgba(238,90,12,1) 50%,rgba(223,61,1,1) 100%);
+        background: linear-gradient(top, rgba(253,144,58,1) 0%,rgba(241,117,49,1) 50%,rgba(238,90,12,1) 50%,rgba(223,61,1,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fd903a', endColorstr='#df3d01',GradientType=0 );
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        border: 1px solid #e8792d;
+        box-shadow: 1px 1px 3px #aaa;
+    }
+</style>
+<script type="text/javascript">
+	function unsubscribe(pid) {
+		jQuery( ".pid"+pid+" #unsubscribe" ).prop("value","unsubscribing...");
+		var email = '<?php echo $email ?>';
+		var postUrl = '<?php echo $this->getUrl() ?>outofstock/index/unsubscribe';
+		jQuery.post(postUrl, {email:email,product_id:pid}, function( data ) {
+            var obj = jQuery.parseJSON(data);
+            if(obj.status == "success") {
+                jQuery( ".unsubscription-message" ).html('<ul class="messages"><li class="success-msg"><ul><li style="color:#14595c"><span>'+obj.msg+'</span></li></ul></li></ul>');
+                jQuery( ".unsubscription-message" ).fadeIn();
+                jQuery( ".pid"+pid ).remove();
+            } else if(obj.status == "failure"){
+                jQuery( ".unsubscription-message" ).html('<ul class="messages"><li class="error-msg"><ul><li style="color:#14595c"><span>'+obj.msg+'</span></li></ul></li></ul>');
+                jQuery( ".unsubscription-message" ).fadeIn();
+            }
+            setTimeout( function() {
+                jQuery( ".unsubscription-message" ).fadeOut();
+            }, 4000);
+        });
+	}
+</script>
