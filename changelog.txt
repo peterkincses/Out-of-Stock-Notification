@@ -1,0 +1,13 @@
+Release Notes
+
+Out of Stock notification 1.0.3 (2017-02-24)
+* Admin Catalog/Manage product grid issue fixed for database using a prefix.
+
+Out of Stock notification 1.0.2 (2017-01-26)
+* Changes in email template files.
+
+Out of Stock notification 1.0.1 (2017-01-18)
+* Fixed email issue.
+
+Out of Stock notification 1.0.0 (2017-01-05)
+* initial public release
