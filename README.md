@@ -1,4 +1,4 @@
-# Magento-Out-of-Stock-notification - Extension for Magento (CE)
+# Out-of-Stock-notification - Extension for Magento (CE)
 Magento Extension: Allows both customers and guest to sign up for alerts once out of stock products are available.
 If you just want to use this extension, get it [here](https://www.magentocommerce.com/magento-connect/out-of-stock-notification-12.html).
 
