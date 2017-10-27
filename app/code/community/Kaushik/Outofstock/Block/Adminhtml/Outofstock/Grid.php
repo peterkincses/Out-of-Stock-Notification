@@ -20,6 +20,18 @@ class Kaushik_Outofstock_Block_Adminhtml_Outofstock_Grid extends Mage_Adminhtml_
   protected function _prepareCollection()
   {
       $collection = Mage::getModel('outofstock/outofstock')->getCollection();
+      $collection->getSelect()
+          ->joinLeft(
+              array('prod' => 'catalog_product_entity'),
+              'prod.entity_id = main_table.product_id',
+              array('sku')
+          )
+          ->joinLeft(
+              array('cpev' => 'catalog_product_entity_varchar'),
+              'cpev.entity_id=prod.entity_id AND cpev.attribute_id='.$prodNameAttrId.'',
+              array('product_name' => 'value')
+          )
+      ;
       $this->setCollection($collection);
       return parent::_prepareCollection();
   }
@@ -60,15 +72,14 @@ class Kaushik_Outofstock_Block_Adminhtml_Outofstock_Grid extends Mage_Adminhtml_
           'header'    => Mage::helper('outofstock')->__('Product Sku'),
           'align'     =>'left',
           'width'     => '150px',
-          'index'     => 'sku',
-          'renderer'  => 'Kaushik_Outofstock_Block_Adminhtml_Outofstock_Renderer_Productsku',
+          'index'     => 'sku'
       ));
 
       $this->addColumn('product_name', array(
           'header'    => Mage::helper('outofstock')->__('Product Name'),
           'align'     =>'left',
           'index'     => 'product_name',
-          'renderer'  => 'Kaushik_Outofstock_Block_Adminhtml_Outofstock_Renderer_Productname',
+          'filter_index' => 'cpev.value'
       ));
 
       $this->addColumn('created_time', array(
